@@ -1,24 +1,22 @@
 const express = require('express');
 const router = express.Router();
 const Amo = require('../modules/amo');
-const amo = new Amo();
+const amo = new Amo('shmelevivan21@yandex.ru', '64661c5ae1a6cc384684227c553da0e6a97bdefb', 'shmelevivan21');
 
-/* GET home page. */
-router.get('/', function (req, res, next) {
-  res.render('index', { title: 'Express' });
-});
-
-router.post('/add_deal', async (req, res) => {
+router.post('/unsorted_deals_assignment', async (req, res) => {
   try {
     await amo.auth();
-    await amo.getManagers();
-    await amo.getLeads();
+
     const response = req.body;
     const deal = {};
+
     for (let key in response) {
       index = key.split('[').join('-').split(']').join('').split('-').pop();
       deal[index] = response[key];
     }
+
+    await amo.setManager(deal);
+
     res.send(JSON.stringify(deal));
   } catch (err) {
     throw err;
